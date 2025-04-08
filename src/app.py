@@ -36,7 +36,8 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
-@app.route('/user', methods=['GET'])
+
+@app.route('/user', methods=['GET'])            # <-- USER get ----> this is an endpoint aka the route -->
 def get_user():
     user = User.query.all()
     user_list = [userData.serialize() for userData in user ]
@@ -44,7 +45,7 @@ def get_user():
     return jsonify(user_list), 200
 
 
-@app.route('/character', methods=['GET'])
+@app.route('/character', methods=['GET'])           # <---Character get--->
 def get_character():
     character = Character.query.all()
     character_list = [characterData.serialize() for characterData in character ]
@@ -52,7 +53,7 @@ def get_character():
     return jsonify(character_list), 200
 
 
-@app.route('/planet', methods=['GET'])
+@app.route('/planet', methods=['GET'])              # <---PLANET get--->
 def get_planet():
     planet = Planet.query.all()
     planet_list = [planetData.serialize() for planetData in planet ]
@@ -60,17 +61,16 @@ def get_planet():
     return jsonify( planet_list), 200
 
 
-@app.route('/Fav_char', methods=['GET'])
+@app.route('/Fav_char', methods=['GET'])                # <---Fav Character get--->
 def get_fav_character():
     Fav_char_list = Favorite_Character.query.all()
     Fav_Character_list = [Fav_char_data.serialize() for Fav_char_data in Fav_char_list ]
 
     return jsonify( Fav_Character_list), 200
 
+#   <-------------POST methods -------------->
 
-
-
-@app.route('/user', methods=['POST'])
+@app.route('/user', methods=['POST'])               # <-------USER post-------->
 def handle_user_post():
     data = request.json
     new_user = User(
@@ -86,7 +86,7 @@ def handle_user_post():
 
 
 
-@app.route('/person', methods=['POST'])
+@app.route('/person', methods=['POST'])             # <------CHARACTER post------>
 def handle_person_post():
     data = request.json
     new_person = Character(
@@ -100,7 +100,22 @@ def handle_person_post():
 
     return jsonify(new_person.serialize()), 200
 
-@app.route('/Fav_character', methods=['POST'])
+
+@app.route('/planet', methods=['POST'])                 # <------PLANET post------->
+def handle_planet_post():
+    data = request.json
+    new_planet = Planet(
+        name = data["name"],
+        population = data["population"],
+        mass = data["mass"],
+
+    )
+    db.session.add(new_person)
+    db.session.commit()
+
+    return jsonify(new_person.serialize()), 200
+
+@app.route('/Fav_character', methods=['POST'])                  # <-------FAV CHARACTER post-------->
 def handle_fav_char_post():
     data = request.json
     new_fav_char = Favorite_Character(
