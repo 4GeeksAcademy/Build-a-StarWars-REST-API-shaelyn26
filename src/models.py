@@ -57,7 +57,7 @@ class Planet(db.Model):
             # do not serialize the password, its a security breach
         }
 
-
+      
 class Favorite_Character(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))

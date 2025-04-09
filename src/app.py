@@ -53,6 +53,14 @@ def get_character():
     return jsonify(character_list), 200
 
 
+@app.route('/character/<int:character_id>', methods=['GET'])           # <--- single Character get--->
+def get_single_character(character_id):
+                # User.query.filter_by(id=user_id).one_or_none()
+    character = Character.query.filter_by(id=character_id).first()
+
+    return jsonify(character.serialize()), 200
+
+
 @app.route('/planet', methods=['GET'])              # <---PLANET get--->
 def get_planet():
     planet = Planet.query.all()
@@ -86,7 +94,7 @@ def handle_user_post():
 
 
 
-@app.route('/person', methods=['POST'])             # <------CHARACTER post------>
+@app.route('/character', methods=['POST'])             # <------CHARACTER post------>
 def handle_person_post():
     data = request.json
     new_person = Character(
@@ -127,13 +135,6 @@ def handle_fav_char_post():
     db.session.commit()
 
     return jsonify(new_fav_char.serialize()), 200
-
-
-
-
-
-
-
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
