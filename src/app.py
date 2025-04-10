@@ -45,7 +45,7 @@ def get_user():
     return jsonify(user_list), 200
 
 
-@app.route('/character', methods=['GET'])           # <---Character get--->
+@app.route('/character', methods=['GET'])           # <---CHARACTER get--->
 def get_character():
     character = Character.query.all()
     character_list = [characterData.serialize() for characterData in character ]
@@ -53,7 +53,7 @@ def get_character():
     return jsonify(character_list), 200
 
 
-@app.route('/character/<int:character_id>', methods=['GET'])           # <--- single Character get--->
+@app.route('/character/<int:character_id>', methods=['GET'])           # <--- SINGLE CHARACTER get--->
 def get_single_character(character_id):
                 # User.query.filter_by(id=user_id).one_or_none()
     character = Character.query.filter_by(id=character_id).first()
@@ -61,15 +61,23 @@ def get_single_character(character_id):
     return jsonify(character.serialize()), 200
 
 
-@app.route('/planet', methods=['GET'])              # <---PLANET get--->
-def get_planet():
-    planet = Planet.query.all()
-    planet_list = [planetData.serialize() for planetData in planet ]
+@app.route('/planets', methods=['GET'])              # <---PLANETS get--->
+def get_planets():
+    planets = Planet.query.all()
+    planets_list = [planetsData.serialize() for planetsData in planets ]
 
-    return jsonify( planet_list), 200
+    return jsonify( planets_list), 200
 
 
-@app.route('/Fav_char', methods=['GET'])                # <---Fav Character get--->
+
+@app.route('/planet/<int:planet_id>', methods=['GET'])              # <--- SINGLE PLANET get--->
+def get_single_planet(planet_id):
+    planet = Planet.query.filter_by(id=planet_id).first()
+
+    return jsonify(planet.serialize()), 200
+
+
+@app.route('/Fav_char', methods=['GET'])                # <---FAV CHARACTER get--->
 def get_fav_character():
     Fav_char_list = Favorite_Character.query.all()
     Fav_Character_list = [Fav_char_data.serialize() for Fav_char_data in Fav_char_list ]
@@ -116,12 +124,27 @@ def handle_planet_post():
         name = data["name"],
         population = data["population"],
         mass = data["mass"],
+        is_habitable = data["is_habitable"],
+        temperature = data["temperature"],
 
     )
-    db.session.add(new_person)
+    db.session.add(new_planet)
     db.session.commit()
 
-    return jsonify(new_person.serialize()), 200
+    return jsonify(new_planet.serialize()), 200
+
+@app.route('/Fav_Planet', methods=['POST'])                  # <-------FAV PLANET post-------->
+def handle_fav_planet_post():
+    data = request.json
+    new_fav_planet = Favorite_Planet(
+        user_id = data["user_id"],
+        planet_id = data["planet_id"]
+
+    )
+    db.session.add(new_fav_planet)
+    db.session.commit()
+
+    return jsonify(new_fav_planet.serialize()), 200
 
 @app.route('/Fav_character', methods=['POST'])                  # <-------FAV CHARACTER post-------->
 def handle_fav_char_post():
@@ -135,6 +158,23 @@ def handle_fav_char_post():
     db.session.commit()
 
     return jsonify(new_fav_char.serialize()), 200
+
+
+
+# <--DELETE method---->
+
+@app.route('/fav_planet/<int:fav_planet_id>', methods=['DELETE'])              # <--- SINGLE PLANET delete--->
+def delete_planet(fav_planet_id):
+                    # User.query.filter_by(id=user_id).one_or_none()
+    planet = Favorite_Planet.query.filter_by(id=fav_planet_id)
+    db.session.delete(planet)
+    db.session.commit()
+    response = {
+        "message": "favorite planet was deleted",
+        "planet": planet.serialize()    
+        }
+    return jsonify(response), 200
+
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
